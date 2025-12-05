@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rack ECO Z60 – Simulador (Mobile) + Peso & Portes</title>
+  <style>
+    :root{
+      --bg:#0b1220; --card:#0f172a; --muted:#93a3b8; --text:#e6edf6;
+      --brand:#1e6bb8; --brand-2:#0ea5e9; --ok:#16a34a; --danger:#ef4444;
+      --shadow:0 10px 30px rgba(0,0,0,.35); --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    header{position:sticky;top:0;z-index:10;background:rgba(11,18,32,.9);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid rgba(255,255,255,.04);}
+    .wrap{max-width:980px;margin:auto;padding:14px 16px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand img{height:28px;width:auto;display:block}
+    .brand-name{font-weight:700;letter-spacing:.3px;opacity:.9}
+    .action-link{appearance:none;border:0;border-radius:999px;padding:10px 14px;background:var(--brand);color:#fff;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:var(--shadow)}
+    .action-link:hover{filter:brightness(1.05)}
+    main{max-width:980px;margin:auto;padding:16px}
+    .hero{display:grid;gap:12px;margin:10px 0 18px}
+    .hero .title{font-size:22px;font-weight:800}
+    .hero .subtitle{color:var(--muted);font-size:14px}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+    .grid{display:grid;gap:10px}
+    @media(min-width:720px){.grid{grid-template-columns:1.1fr .9fr}}
+    .field{display:grid;gap:6px}
+    label{font-size:13px;color:var(--muted)}
+    select,input[type=number]{width:100%;padding:12px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#0b1220;color:var(--text);font-size:16px}
+    input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{appearance:none;margin:0}
+    .help{color:var(--muted);font-size:12px}
+    .cta{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .btn{appearance:none;border:0;border-radius:12px;padding:12px 14px;background:var(--brand-2);color:#00131f;font-weight:700;cursor:pointer;text-decoration:none;text-align:center}
+    .btn:active{transform:scale(.99)}
+    table{width:100%;border-collapse:separate;border-spacing:0 8px}
+    thead th{font-size:12px;text-align:left;color:var(--muted);padding:0 8px}
+    tbody tr{background:#0b1426}
+    tbody td{padding:10px 8px;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+    tbody tr td:first-child{border-left:1px solid rgba(255,255,255,.06);border-top-left-radius:12px;border-bottom-left-radius:12px}
+    tbody tr td:last-child{border-right:1px solid rgba(255,255,255,.06);border-top-right-radius:12px;border-bottom-right-radius:12px}
+    .remove{background:transparent;border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:10px;padding:6px 10px;cursor:pointer}
+    .remove:hover{background:#1f2937}
+    .remove.danger{border-color:rgba(239,68,68,.6);color:#fecaca}
+    @media(max-width:680px){
+      table thead{display:none}
+      table,tbody,tr,td{display:block;width:100%}
+      tbody tr{margin:0 0 12px 0;padding:8px;border-radius:12px}
+      tbody td{display:flex;justify-content:space-between;align-items:center;border:0;padding:8px 6px;border-bottom:1px dashed rgba(255,255,255,.08)}
+      tbody td:last-child{border-bottom:0}
+      tbody td::before{content:attr(data-label);color:var(--muted);font-size:12px;margin-right:8px}
+    }
+    .totals{display:grid;gap:6px}
+    .totals .row{display:flex;justify-content:space-between;align-items:center}
+    .totals .grand{font-size:22px;font-weight:800}
+    .note{font-size:12px;color:var(--muted)}
+    textarea#orcamentoTexto{
+      width:100%;
+      margin-top:10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.08);
+      background:#0b1220;
+      color:var(--text);
+      padding:10px;
+      font-family:inherit;
+      font-size:14px;
+      min-height:220px;
+      resize:vertical;
+      white-space:pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar">
+      <div class="brand">
+        <!-- Podes trocar esta imagem/base64 se quiseres -->
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAACWCAYAAAAonXpvAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAExmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSfvu78nIGlkPSdXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQnPz4KPHg6eG1wbWV0YSB4bWxuczp4PSdhZG9iZTpuczptZXRhLyc+CjxyZGY6UkRGIHhtbG5zOnJkZj0naHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyc+CgogPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9JycKICB4bWxuczpBdHRyaWI9J2h0dHA6Ly9ucy5hdHRyaWJ1dGlvbi5jb20vYWRzLzEuMC8nPgogIDxBdHRyaWI6QWRzPgogICA8cmRmOlNlcT4KICAgIDxyZGY6bGkgcmRmOnBhcnNlVHlwZT0nUmVzb3VyY2UnPgogICAgIDxBdHRyaWI6Q3JlYXRlZD4yMDI1LTEwLTE2PC9BdHRyaWI6Q3JlYXRlZD4KICAgICA8QXR0cmliOkV4dElkPjFmM2IwN2Q4LWM1M2UtNDU3Yy05ODY1LTAxMGY3YWRjN2U5NjwvQXR0cmliOkV4dElkPgogICAgIDxBdHRyaWI6RmJJZD41MjUyNjU5MTQxNzk1ODA8L0F0dHJpYjpGYklkPgogICAgIDxBdHRyaWI6VG91Y2hUeXBlPjI8L0F0dHJpYjpUb3VjaFR5cGU+CiAgICA8L3JkZjpsaT4KICAgPC9yZGY6U2VxPgogIDwvQXR0cmliOkFkcz4KIDwvcmRmOkRlc2NyaXB0aW9uPgoKIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PScnCiAgeG1sbnM6ZGM9J2h0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvJz4KICA8ZGM6dGl0bGU+CiAgIDxyZGY6QWx0PgogICAgPHJkZjpsaSB4bWw6bGFuZz0neC1kZWZhdWx0Jz5sb2dvIGFncmFyYWNrcyAtIDUwMHgxNTBweCAtIDE8L3JkZjpsaT4KICAgPC9yZGY6QWx0PgogIDwvZGM6dGl0bGU+CiA8L3JkZjpEZXNjcmlwdGlvbj4KCiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0nJwogIHhtbG5zOnBkZj0naHR0cDovL25zLmFkb2JlLmNvbS9wZGYvMS4zLyc+CiAgPHBkZjpBdXRob3I+QWdlbmNpYSBQVEJSPC9wZGY6QXV0aG9yPgogPC9yZGY6RGVzY3JpcHRpb24+CgogPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9JycKICB4bWxuczp4bXA9J2h0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8nPgogIDx4bXA6Q3JlYXRvclRvb2w+Q2FudmEgKFJlbmRlcmVyKSBkb2M9REFHSWszVEVyUUkgdXNlcj1VQUZzMG9RQVpxSSBicmFuZD1CQUMtT1BRbXpXZyB0ZW1wbGF0ZT08L3htcDpDcmVhdG9yVG9vbD4KIDwvcmRmOkRlc2NyaXB0aW9uPgo8L3JkZjpSREY+CjwveDp4bXBtZXRhPgo=" alt="Agraracks" />
+        <span class="brand-name">AGRARACKS</span>
+      </div>
+      <a class="action-link" href="https://www.agraracks.com/" target="_blank" rel="noopener">Ver site</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="title">Rack ECO Z60</div>
+      <div class="subtitle">Simule o seu módulo, veja o peso e o valor do transporte automaticamente (IVA 23%).</div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <div class="field">
+          <label for="moduleType">Tipo de módulo</label>
+          <select id="moduleType">
+            <option value="2">Individual</option>
+            <option value="1">Seguinte</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="altura">Altura (m)</label>
+          <select id="altura">
+            <option value="2000">2.00</option>
+            <option value="2500">2.50</option>
+            <option value="3000">3.00</option>
+            <option value="3500">3.50</option>
+            <option value="4000">4.00</option>
+            <option value="4500">4.50</option>
+            <option value="5000">5.00</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="comprimento">Comprimento (m)</label>
+          <select id="comprimento">
+            <option value="1500">1.50</option>
+            <option value="1750">1.75</option>
+            <option value="2000">2.00</option>
+            <option value="2250">2.25</option>
+            <option value="2500">2.50</option>
+            <option value="2750">2.75</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="largura">Profundidade (m)</label>
+          <select id="largura">
+            <option value="400">0.40</option>
+            <option value="500">0.50</option>
+            <option value="600">0.60</option>
+            <option value="800">0.80</option>
+            <option value="1000">1.00</option>
+            <option value="1200">1.20</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="qtdNiveis">Quantidade de níveis</label>
+          <input type="number" id="qtdNiveis" value="3" min="1" />
+        </div>
+        <div class="field">
+          <label for="qtdModulos">Quantidade de módulos</label>
+          <input type="number" id="qtdModulos" value="1" min="1" />
+        </div>
+
+        <div class="cta">
+          <button class="btn" type="button" id="addBtn">Adicionar ao orçamento</button>
+          <a class="btn" href="mailto:comercial@agraracks.com?subject=Pedido de cotação RACK ECO Z60" target="_blank" rel="noopener">Pedir cotação</a>
+          <button class="btn" type="button" id="gerarOrcamentoBtn">Enviar orçamento</button>
+          <span class="help">Preço total atual (c/ IVA): € <strong id="result">0.00</strong></span>
+        </div>
+        <p class="note">Nota: IVA fixo a 23% aplicado em produtos e transporte.</p>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 6px 0">Totais</h3>
+        <div class="totals">
+          <div class="row"><span>Subtotal produtos</span> <span>€ <strong id="totalPreco">0.00</strong></span></div>
+          <div class="row"><span>Peso total (kg)</span> <span><strong id="totalPeso">0.00</strong> kg</span></div>
+          <div class="row"><span>Transporte (s/ IVA)</span> <span>€ <strong id="valorFrete">0.00</strong></span></div>
+          <div class="row"><span>IVA 23% (produtos + transporte)</span> <span>€ <strong id="totalIVA">0.00</strong></span></div>
+          <div class="row grand"><span>Total com IVA</span> <span>€ <span id="totalComIVA">0.00</span></span></div>
+        </div>
+        <p class="note" id="freteNote"></p>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:14px">
+      <h3 style="margin:0 0 8px 0">Itens adicionados</h3>
+      <table id="orcamentoTable" aria-label="Lista de itens">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Altura</th>
+            <th>Compr.</th>
+            <th>Prof.</th>
+            <th>Níveis</th>
+            <th>Qtd</th>
+            <th>Preço Unit. (€)</th>
+            <th>Peso Unit. (kg)</th>
+            <th>Peso Total (kg)</th>
+            <th>Preço Total (€)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="card" style="margin-top:14px">
+      <h3 style="margin:0 0 8px 0">Texto de orçamento (copiar e colar no e-mail)</h3>
+      <p class="note">Clique em “Enviar orçamento” para gerar automaticamente o texto abaixo.</p>
+      <textarea id="orcamentoTexto" readonly></textarea>
+    </section>
+  </main>
+
+  <footer><div class="wrap">© <span id="year"></span> Agraracks – Estanteria Industrial</div></footer>
+
+<script>
+const pesoBastidor = {"2000": {"400": 8.55, "500": 8.71, "600": 9.46, "700": 9.74, "800": 9.94, "900": 9.95, "1000": 9.83, "1100": 9.93, "1200": 10.17}, "2500": {"400": 10.45, "500": 10.57, "600": 10.89, "700": 11.13, "800": 11.37, "900": 11.58, "1000": 11.88, "1100": 12.13, "1200": 12.43}, "3000": {"400": 12.68, "500": 12.92, "600": 13.18, "700": 13.43, "800": 13.73, "900": 14.03, "1000": 14.31, "1100": 14.61, "1200": 14.91}, "3500": {"400": 14.38, "500": 14.94, "600": 15.15, "700": 15.45, "800": 15.72, "900": 15.73, "1000": 16.24, "1100": 16.31, "1200": 16.62}, "4000": {"400": 16.68, "500": 16.88, "600": 17.17, "700": 17.47, "800": 17.77, "900": 18.17, "1000": 18.49, "1100": 18.79, "1200": 18.93}, "4500": {"400": 18.63, "500": 18.86, "600": 19.18, "700": 19.48, "800": 19.98, "900": 19.98, "1000": 20.32, "1100": 20.47, "1200": 20.99}, "5000": {"400": 20.53, "500": 20.94, "600": 21.19, "700": 21.49, "800": 21.84, "900": 22.22, "1000": 22.58, "1100": 22.98, "1200": 23.37}};
+const pesoReforcoLateral = {"400": 0.29, "500": 0.36, "600": 0.43, "700": 0.5, "800": 0.58, "900": 0.65, "1000": 0.72, "1100": 0.79, "1200": 0.86};
+const pesoReforcoCentral = {"400": 0.33, "500": 0.42, "600": 0.5, "700": 0.58, "800": 0.67, "900": 0.75, "1000": 0.83, "1100": 0.92, "1200": 1.0};
+const pesoTampo = {"1000": {"400": 4.44, "500": 5.55, "600": 6.67, "700": 7.78, "800": 8.89, "900": 12.49, "1000": 11.11, "1100": 12.22, "1200": 13.33}, "1250": {"400": 5.55, "500": 6.94, "600": 8.33, "700": 9.72, "800": 11.11, "900": 15.27, "1000": 13.88, "1100": 15.57, "1200": 16.66}, "1500": {"400": 6.79, "500": 8.48, "600": 10.08, "700": 11.88, "800": 13.2, "900": 17.08, "1000": 16.82, "1100": 19.21, "1200": 20.33}, "1750": {"400": 8.03, "500": 10.04, "600": 12.05, "700": 14.05, "800": 16.02, "900": 20.89, "1000": 20.08, "1100": 22.92, "1200": 24.09}, "2000": {"400": 9.29, "500": 11.63, "600": 13.89, "700": 16.25, "800": 18.57, "900": 23.83, "1000": 24.07, "1100": 26.83, "1200": 27.98}, "2250": {"400": 10.35, "500": 12.81, "600": 15.52, "700": 18.1, "800": 20.32, "900": 26.72, "1000": 27.0, "1100": 30.66, "1200": 31.94}, "2500": {"400": 11.64, "500": 14.65, "600": 17.2, "700": 20.28, "800": 22.39, "900": 27.21, "1200": 35.03}, "2600": {"400": 12.09, "500": 15.11, "600": 17.84, "700": 20.82, "800": 23.44, "900": 27.21, "1000": 30.23, "1100": 33.8, "1200": 36.28}, "2750": {"400": 12.74, "500": 15.85, "600": 19.11, "700": 22.29, "800": 25.48, "900": 28.66, "1000": 33.35, "1100": 36.22, "1200": 38.22}};
+const bast = {"2000":{"400":24.54,"500":24.85,"600":25.07,"800":25.52,"1000":25.95,"1200":26.4},"2500":{"400":29.82,"500":30.24,"600":30.58,"800":31.24,"1000":31.91,"1200":32.57},"3000":{"400":35.63,"500":36.12,"600":36.44,"800":37.08,"1000":37.77,"1200":40.84},"3500":{"400":39.55,"500":40.03,"600":40.35,"800":41.02,"1000":41.68,"1200":44.76},"4000":{"400":45.38,"500":45.89,"600":46.22,"800":46.89,"1000":47.54,"1200":50.95},"4500":{"400":49.83,"500":50.28,"600":50.51,"800":50.95,"1000":51.4,"1200":55.15},"5000":{"400":55.13,"500":55.68,"600":56.03,"800":56.67,"1000":57.36,"1200":61.09}};
+const niv = {"1500":{"400":31.42,"500":34.0,"600":36.47,"800":41.4,"1000":46.32,"1200":51.24},"1750":{"400":34.31,"500":37.22,"600":40.01,"800":45.61,"1000":51.2,"1200":56.75},"2000":{"400":37.16,"500":40.41,"600":43.55,"800":49.8,"1000":56.06,"1200":62.32},"2250":{"400":42.17,"500":45.91,"600":49.55,"800":56.82,"1000":54.11,"1200":71.37},"2500":{"400":44.79,"500":48.87,"600":52.85,"800":60.78,"1000":68.72,"1200":76.66},"2750":{"400":52.02,"500":56.59,"600":61.07,"800":70.01,"1000":78.97,"1200":87.91}};
+const pesoViga = {"1000": 1.62, "1250": 1.94, "1500": 2.26, "1750": 2.58, "2000": 2.9, "2250": 3.22, "2500": 3.54, "2750": 4.14};
+
+const FRETE_RULES = [
+  {min:0,   max:40,   price:11.73},
+  {min:41,  max:50,   price:13.02},
+  {min:51,  max:60,   price:15.78},
+  {min:61,  max:80,   price:19.32},
+  {min:81,  max:100,  price:24.76},
+  {min:101, max:125,  price:31.03},
+  {min:126, max:150,  price:36.44},
+  {min:151, max:175,  price:39.55},
+  {min:176, max:200,  price:45.45},
+  {min:201, max:250,  price:46.52},
+  {min:251, max:300,  price:53.41},
+  {min:301, max:350,  price:58.55},
+  {min:351, max:400,  price:63.79},
+  {min:401, max:450,  price:70.74},
+  {min:451, max:500,  price:80.18},
+  {min:501, max:600,  price:86.36},
+  {min:601, max:700,  price:95.50},
+  {min:701, max:800,  price:113.60},
+  {min:801, max:900,  price:116.49},
+  {min:901, max:1000, price:128.94},
+  {min:1001, max:2499, pricePerKg:0.174},
+  {min:2500, max:Infinity, pricePerKg:0.149}
+];
+const APPLY_SURCHARGE_28 = true;
+const IVA = 0.23;
+
+function reforcosCentraisPorComp(C){
+  const c = parseInt(C, 10);
+  if([1500,2000,2250].includes(c)) return 1;
+  if(c === 2500) return 2;
+  if(c === 2750) return 3;
+  return 0;
+}
+
+function calculaFreteSemIVA(pesoTotalKg){
+  for(const r of FRETE_RULES){
+    if(pesoTotalKg >= r.min && pesoTotalKg <= r.max && r.price != null){
+      let base = r.price;
+      if(APPLY_SURCHARGE_28) base *= 1.28;
+      return base;
+    }
+    if(pesoTotalKg >= r.min && pesoTotalKg <= r.max && r.pricePerKg != null){
+      let base = pesoTotalKg * r.pricePerKg;
+      if(APPLY_SURCHARGE_28) base *= 1.28;
+      return base;
+    }
+  }
+  const last = FRETE_RULES[FRETE_RULES.length-1];
+  let base = pesoTotalKg * (last.pricePerKg || 0);
+  if(APPLY_SURCHARGE_28) base *= 1.28;
+  return base;
+}
+
+function getPesoBastidor(alt, larg){
+  return (pesoBastidor[alt]?.[larg]) || 0;
+}
+function getPesoNivel(comp, larg){
+  const vigaPar = ((2 * (pesoViga[comp] || 0))) || 0;
+  const tampo = (pesoTampo[comp]?.[larg]) || 0;
+  const refLat = (pesoReforcoLateral[larg]) || 0;
+  const refCen = (pesoReforcoCentral[larg]) || 0;
+  const nCentrais = reforcosCentraisPorComp(comp);
+  return vigaPar + tampo + (2 * refLat) + (nCentrais * refCen);
+}
+function getPesoModulo(tipoMod, alt, comp, larg, qtdNiveis){
+  const bastidores = (tipoMod === "Individual" ? 2 : 1) * getPesoBastidor(alt, larg);
+  const nivel = getPesoNivel(comp, larg);
+  return bastidores + (qtdNiveis * nivel);
+}
+
+const tableBody = document.querySelector('#orcamentoTable tbody');
+let totalPreco = 0;
+let totalPeso = 0;
+
+// para gerar o texto do orçamento
+let itensOrcamento = [];
+let lastFreteSemIVA = 0;
+let lastSubtotal = 0;
+
+function rebuildItensFromTable(){
+  itensOrcamento = [];
+  tableBody.querySelectorAll('tr').forEach(tr => {
+    const tds = tr.querySelectorAll('td');
+    if(tds.length < 10) return;
+    const tipo = tds[0].textContent.trim();
+    const altM = parseFloat(tds[1].textContent.replace(',', '.')) || 0;
+    const compM = parseFloat(tds[2].textContent.replace(',', '.')) || 0;
+    const largM = parseFloat(tds[3].textContent.replace(',', '.')) || 0;
+    const niveis = parseInt(tds[4].textContent,10) || 0;
+    const qtd = parseInt(tds[5].textContent,10) || 0;
+    const precoUnit = parseFloat(tds[6].textContent.replace(',', '.')) || 0;
+    itensOrcamento.push({
+      tipo,
+      alt: Math.round(altM * 1000),
+      comp: Math.round(compM * 1000),
+      larg: Math.round(largM * 1000),
+      niveis,
+      qtd,
+      precoUnit
+    });
+  });
+}
+
+function addToList(){
+  const mod = parseInt(document.getElementById('moduleType').value);
+  const tipoMod = mod === 2 ? 'Individual' : 'Seguinte';
+  const alt = document.getElementById('altura').value;
+  const comp = document.getElementById('comprimento').value;
+  const larg = document.getElementById('largura').value;
+  const niveis = parseInt(document.getElementById('qtdNiveis').value);
+  const qtd = parseInt(document.getElementById('qtdModulos').value);
+
+  const precoB = (bast[alt] && bast[alt][larg]) || 0;
+  const precoN = (niv[comp] && niv[comp][larg]) || 0;
+  const precoUnit = (mod * precoB) + (niveis * precoN);
+  const precoTotalItem = precoUnit * qtd;
+  totalPreco += precoTotalItem;
+
+  const pesoUnit = getPesoModulo(tipoMod, alt, comp, larg, niveis);
+  const pesoTotalItem = pesoUnit * qtd;
+  totalPeso += pesoTotalItem;
+
+  const tr = document.createElement('tr');
+  function td(text, label){
+    const td = document.createElement('td');
+    td.setAttribute('data-label', label);
+    td.textContent = text;
+    tr.appendChild(td);
+  }
+  td(tipoMod,'Tipo');
+  td((alt/1000).toFixed(2),'Altura');
+  td((comp/1000).toFixed(2),'Compr.');
+  td((larg/1000).toFixed(2),'Prof.');
+  td(niveis,'Níveis');
+  td(qtd,'Qtd');
+  td(precoUnit.toFixed(2),'Preço Unit. (€)');
+  td(pesoUnit.toFixed(2),'Peso Unit. (kg)');
+  td(pesoTotalItem.toFixed(2),'Peso Total (kg)');
+  td(precoTotalItem.toFixed(2),'Preço Total (€)');
+  const tdA = document.createElement('td');
+  tdA.setAttribute('data-label','');
+  tdA.innerHTML='<button class="remove danger">Remover</button>';
+  tdA.querySelector('button').addEventListener('click', ()=>{
+    removerItem(tr, precoTotalItem, pesoTotalItem);
+  });
+  tr.appendChild(tdA);
+  tableBody.appendChild(tr);
+
+  rebuildItensFromTable();
+  atualizarTotais();
+}
+
+function removerItem(tr, preco, peso){
+  tr.remove();
+  totalPreco -= preco;
+  totalPeso -= peso;
+  rebuildItensFromTable();
+  atualizarTotais();
+}
+
+function atualizarTotais(){
+  const freteSemIVA = calculaFreteSemIVA(totalPeso);
+  const subtotal = totalPreco;
+  const iva = (subtotal + freteSemIVA) * IVA;
+  const totalComIva = subtotal + freteSemIVA + iva;
+
+  lastFreteSemIVA = freteSemIVA;
+  lastSubtotal = subtotal;
+
+  document.getElementById('totalPreco').textContent = subtotal.toFixed(2);
+  document.getElementById('totalPeso').textContent = totalPeso.toFixed(2);
+  document.getElementById('valorFrete').textContent = freteSemIVA.toFixed(2);
+  document.getElementById('totalIVA').textContent = iva.toFixed(2);
+  document.getElementById('totalComIVA').textContent = totalComIva.toFixed(2);
+  document.getElementById('result').textContent = totalComIva.toFixed(2);
+
+  document.getElementById('freteNote').textContent =
+    "Tabela Portugal Continental; valores base " +
+    (APPLY_SURCHARGE_28 ? "+28% aplicados" : "sem sobretaxa") +
+    ", IVA 23% à parte.";
+}
+
+function gerarTextoOrcamento(){
+  if(itensOrcamento.length === 0){
+    alert('Adicione pelo menos um item ao orçamento.');
+    return;
+  }
+
+  // A / C / P mm (se mais de um, usar "Diversos")
+  const setAlt = new Set(itensOrcamento.map(i => i.alt));
+  const setComp = new Set(itensOrcamento.map(i => i.comp));
+  const setLarg = new Set(itensOrcamento.map(i => i.larg));
+
+  const A = setAlt.size === 1 ? [...setAlt][0] : 'Diversos';
+  const C = setComp.size === 1 ? [...setComp][0] : 'Diversos';
+  const P = setLarg.size === 1 ? [...setLarg][0] : 'Diversos';
+
+  // Linhas de módulos (uma linha por item da tabela)
+  const linhasModulos = itensOrcamento.map(item => {
+    const tipoTxt = item.tipo === 'Individual' ? 'módulo individual' : 'módulo seguinte';
+    return `${item.qtd} - ${tipoTxt} C${item.comp}mm - ${item.precoUnit.toFixed(2)} €/unid`;
+  }).join('\n');
+
+  const transporteValor = (lastFreteSemIVA || 0).toFixed(2).replace('.', ',');
+  const valorTotalSemIVA = ((lastSubtotal || 0) + (lastFreteSemIVA || 0)).toFixed(2).replace('.', ',');
+
+  const texto = `Bom dia,
+
+Conforme solicitado, envio-lhe abaixo a proposta. No ficheiro em anexo encontrará os detalhes do tipo de material.
+
+${A} x ${C} x ${P} mm, chão + níveis - kg por nível:
+
+${linhasModulos}
+
+Transporte: ${transporteValor} € + IVA 
+
+Valor total - ${valorTotalSemIVA} € + IVA 
+
+Prazo de entrega: de 7 a 15 dias úteis após a adjudicação. 
+
+Fico à disposição para qualquer esclarecimento e aguardo a sua resposta.`;
+
+  const area = document.getElementById('orcamentoTexto');
+  area.value = texto;
+  area.focus();
+  area.select();
+}
+
+document.getElementById('addBtn').addEventListener('click', addToList);
+document.getElementById('gerarOrcamentoBtn').addEventListener('click', gerarTextoOrcamento);
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
